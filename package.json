@@ -1,8 +1,10 @@
 {
   "name": "prompt-buddy",
-  "displayName": "prompt-buddy",
+  "displayName": "Prompt Buddy",
   "description": "A buddy for making prooompts",
-  "version": "0.0.1",
+  "icon": "images/icon.png",
+  "version": "0.0.2",
+  "publisher": "futurepaul",
   "license": "MIT",
   "keywords": [
     "prompt",
@@ -16,7 +18,7 @@
     "url": "https://github.com/futurepaul/prompt-buddy.git"
   },
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "^1.93.1"
   },
   "categories": [
     "Other"
@@ -98,7 +100,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.96.0",
+    "@types/vscode": "^1.93.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
