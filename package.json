@@ -1,0 +1,113 @@
+{
+  "name": "prompt-buddy",
+  "displayName": "prompt-buddy",
+  "description": "A buddy for making prooompts",
+  "version": "0.0.1",
+  "license": "MIT",
+  "keywords": [
+    "prompt",
+    "ai",
+    "template",
+    "context",
+    "markdown"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/futurepaul/prompt-buddy.git"
+  },
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:pbmd",
+    "onWebviewPanel:promptBuddy.prompt"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "prompt-buddy.openPreview",
+        "title": "Open Prompt Preview",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "prompt-buddy.copyToClipboard",
+        "title": "Copy as Prompt to Clipboard",
+        "category": "Prompt Buddy"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "promptBuddy.prompt",
+        "displayName": "Prompt Buddy",
+        "selector": [
+          {
+            "filenamePattern": "*.pbmd"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "prompt-buddy.openPreview",
+          "when": "resourceExtname == .pbmd",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "prompt-buddy.copyToClipboard",
+          "when": "resourceExtname == .pbmd"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Prompt Buddy",
+      "properties": {
+        "promptBuddy.autoOpenPreview": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically open the preview when a prompt file is opened.",
+          "scope": "resource"
+        }
+      }
+    },
+    "languages": [{
+      "id": "pbmd",
+      "extensions": [".pbmd"]
+    }]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.96.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "eslint": "^9.16.0",
+    "esbuild": "^0.24.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.7.2",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1"
+  }
+}
