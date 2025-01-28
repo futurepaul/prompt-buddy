@@ -2,7 +2,7 @@
 
 A VS Code extension for creating and managing prompt templates. Prompt Buddy helps you work with `.pbmd` files, which are markdown files with special tags for including file contents.
 
-![Prompt Buddy Preview](images/screenshot.png)
+![Prompt Buddy Preview](images/code.mp4)
 
 ## Usage
 
