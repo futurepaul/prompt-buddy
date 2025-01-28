@@ -65,3 +65,6 @@ Initial release of Prompt Buddy:
 ### 0.0.3
 
 - Added the ability to disable auto-open preview
+- Added the ability to select multiple files
+- Follows `.gitignore` by default
+- Sorts files by modification time (most recent first)

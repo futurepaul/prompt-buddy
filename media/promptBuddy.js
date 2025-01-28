@@ -225,8 +225,11 @@
             
             // Handle quick pick button
             addButton.addEventListener('click', () => {
+                // Get current files from context
+                const currentFiles = content.split('\n').filter(line => line.trim());
                 vscode.postMessage({
-                    type: 'showFilePicker'
+                    type: 'showFilePicker',
+                    currentFiles: currentFiles
                 });
             });
 

@@ -34,6 +34,43 @@ export class PromptBuddyEditor implements vscode.CustomTextEditorProvider {
 	) { }
 
 	/**
+	 * Read .gitignore and convert patterns to VS Code glob pattern
+	 */
+	private async getGitIgnoreExcludePattern(workspaceFolder: vscode.WorkspaceFolder): Promise<string> {
+		try {
+			const gitignorePath = vscode.Uri.joinPath(workspaceFolder.uri, '.gitignore');
+			const gitignoreContent = await vscode.workspace.fs.readFile(gitignorePath);
+			const patterns = gitignoreContent.toString()
+				.split('\n')
+				.map(line => line.trim())
+				// Filter out comments and empty lines
+				.filter(line => line && !line.startsWith('#'))
+				// Convert patterns to VS Code glob format
+				.map(pattern => {
+					// Remove leading slash if present (make pattern match anywhere)
+					pattern = pattern.replace(/^\//, '');
+					// Add leading and trailing wildcards if not present
+					if (!pattern.startsWith('**/')) {
+						pattern = `**/${pattern}`;
+					}
+					if (!pattern.endsWith('/**') && !pattern.includes('.')) {
+						pattern = `${pattern}/**`;
+					}
+					return pattern;
+				});
+
+			// Always include some standard patterns
+			patterns.push('**/.git/**');
+			
+			// Join all patterns with commas
+			return `{${patterns.join(',')}}`;
+		} catch (error) {
+			// If .gitignore doesn't exist or can't be read, return default patterns
+			return '{**/.git/**,**/node_modules/**,**/dist/**,**/build/**,**/.DS_Store,**/coverage/**}';
+		}
+	}
+
+	/**
 	 * Called when our custom editor is opened.
 	 */
 	public async resolveCustomTextEditor(
@@ -92,15 +129,37 @@ export class PromptBuddyEditor implements vscode.CustomTextEditorProvider {
 					this.updateSection(document, e.tag, e.content);
 					return;
 				case 'showFilePicker':
-					const uris = await vscode.workspace.findFiles('**/*', '**/node_modules/**');
-					const items: vscode.QuickPickItem[] = uris.map(uri => {
+					const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+					if (!workspaceFolder) {
+						vscode.window.showErrorMessage('No workspace folder found');
+						return;
+					}
+
+					// Get the current files from the message
+					const currentFiles = e.currentFiles || [];
+
+					// Get exclude pattern from .gitignore
+					const excludePattern = await this.getGitIgnoreExcludePattern(workspaceFolder);
+					
+					// Create a pattern that includes all files but excludes gitignored patterns
+					const pattern = new vscode.RelativePattern(workspaceFolder, '**/*');
+					const uris = await vscode.workspace.findFiles(pattern, excludePattern);
+
+					// Get file stats and create items with modification time
+					const itemsWithStats = await Promise.all(uris.map(async uri => {
+						const stat = await vscode.workspace.fs.stat(uri);
 						const relativePath = vscode.workspace.asRelativePath(uri, false);
 						const fileName = uri.path.split('/').pop() || '';
 						return {
 							label: relativePath,
-							description: fileName !== relativePath ? `$(file) ${fileName}` : undefined
+							description: fileName !== relativePath ? `$(file) ${fileName}` : undefined,
+							picked: currentFiles.includes(relativePath),
+							mtime: stat.mtime
 						};
-					});
+					}));
+
+					// Sort by modification time (most recent first)
+					const items = itemsWithStats.sort((a, b) => b.mtime - a.mtime);
 
 					const selected = await vscode.window.showQuickPick(items, {
 						placeHolder: 'Search for a file',
@@ -131,7 +190,7 @@ export class PromptBuddyEditor implements vscode.CustomTextEditorProvider {
 			}
 		});
 
-		updateWebview();
+	updateWebview();
 	}
 
 	/**
