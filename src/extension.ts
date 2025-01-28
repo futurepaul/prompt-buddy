@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const registration = PromptBuddyEditor.register(context);
 	console.log('PromptBuddy editor registered:', registration !== undefined);
 	
-	// Auto-open preview when a prompt file is opened
+	// Auto-open preview when a prompt file is opened (if enabled in settings)
 	context.subscriptions.push(
 		vscode.workspace.onDidOpenTextDocument(async (document) => {
 			if (document.uri.fsPath.endsWith('.pbmd')) {
@@ -48,7 +48,6 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		})
 	);
-
 }
 
 // This method is called when your extension is deactivated

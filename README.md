@@ -57,3 +57,11 @@ Initial release of Prompt Buddy:
 - Context file inclusion
 - Notes support
 - Copy to clipboard functionality
+
+### 0.0.2
+
+- Added the app icon
+
+### 0.0.3
+
+- Added the ability to disable auto-open preview
