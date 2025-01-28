@@ -67,8 +67,39 @@
                 }
                 break;
             case 'fileSelected':
-                if (message.path) {
-                    addFileToContext(message.path);
+                if (message.paths && message.paths.length > 0) {
+                    // Get current content
+                    const content = documentState.segments.find(s => s.type === 'section' && s.tag === 'pb-context')?.content || '';
+                    const items = content.split('\n').filter(line => line.trim());
+                    
+                    // Add all new paths that don't exist yet
+                    message.paths.forEach(path => {
+                        if (!items.includes(path)) {
+                            items.push(path);
+                        }
+                    });
+
+                    // Create new content by joining with newlines
+                    const newContent = items.join('\n');
+                    
+                    // Update state and notify extension
+                    documentState.segments = documentState.segments.map(segment => {
+                        if (segment.type === 'section' && segment.tag === 'pb-context') {
+                            return { ...segment, content: newContent };
+                        }
+                        return segment;
+                    });
+                    documentState.version++;
+
+                    vscode.postMessage({
+                        type: 'updateSection',
+                        tag: 'pb-context',
+                        content: newContent,
+                        version: documentState.version
+                    });
+
+                    // Force a re-render
+                    render();
                 }
                 break;
             case 'copyProcessed':

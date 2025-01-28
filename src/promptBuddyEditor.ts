@@ -93,20 +93,31 @@ export class PromptBuddyEditor implements vscode.CustomTextEditorProvider {
 					return;
 				case 'showFilePicker':
 					const uris = await vscode.workspace.findFiles('**/*', '**/node_modules/**');
-					const items: vscode.QuickPickItem[] = uris.map(uri => ({
-						label: vscode.workspace.asRelativePath(uri, false),
-						description: uri.fsPath
-					}));
+					const items: vscode.QuickPickItem[] = uris.map(uri => {
+						const relativePath = vscode.workspace.asRelativePath(uri, false);
+						const fileName = uri.path.split('/').pop() || '';
+						return {
+							label: relativePath,
+							description: fileName !== relativePath ? `$(file) ${fileName}` : undefined
+						};
+					});
 
 					const selected = await vscode.window.showQuickPick(items, {
 						placeHolder: 'Search for a file',
-						matchOnDescription: true
+						matchOnDescription: true,
+						canPickMany: true
 					});
+
+					if (selected !== undefined && selected.length === 0) {
+						return;
+					}
+
+					const selectedPaths = selected?.map(item => item.label);
 					
-					if (selected) {
+					if (selectedPaths) {
 						webviewPanel.webview.postMessage({
 							type: 'fileSelected',
-							path: selected.label
+							paths: selectedPaths
 						});
 					}
 					return;
