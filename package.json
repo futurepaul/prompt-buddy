@@ -30,54 +30,27 @@
   "contributes": {
     "commands": [
       {
-        "command": "prompt-buddy.openPreview",
-        "title": "Open Prompt Preview",
-        "icon": "$(preview)"
-      },
-      {
         "command": "prompt-buddy.copyToClipboard",
         "title": "Copy as Prompt to Clipboard",
         "category": "Prompt Buddy"
-      }
-    ],
-    "customEditors": [
+      },
       {
-        "viewType": "promptBuddy.prompt",
-        "displayName": "Prompt Buddy",
-        "selector": [
-          {
-            "filenamePattern": "*.pbmd"
-          }
-        ],
-        "priority": "option"
+        "command": "prompt-buddy.addFiles",
+        "title": "Add Files to Context",
+        "category": "Prompt Buddy"
       }
     ],
     "menus": {
-      "editor/title": [
-        {
-          "command": "prompt-buddy.openPreview",
-          "when": "resourceExtname == .pbmd",
-          "group": "navigation"
-        }
-      ],
       "commandPalette": [
         {
           "command": "prompt-buddy.copyToClipboard",
           "when": "resourceExtname == .pbmd"
+        },
+        {
+          "command": "prompt-buddy.addFiles",
+          "when": "resourceExtname == .pbmd"
         }
       ]
-    },
-    "configuration": {
-      "type": "object",
-      "title": "Prompt Buddy",
-      "properties": {
-        "promptBuddy.autoOpenPreview": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically open the preview when a prompt file is opened.",
-          "scope": "resource"
-        }
-      }
     },
     "languages": [{
       "id": "pbmd",

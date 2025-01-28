@@ -2,19 +2,30 @@
 
 All notable changes to the "prompt-buddy" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.0.4]
 
-## [Unreleased]
+### Changed
+- Removed webview editor in favor of code actions in the regular editor
+- Removed notes feature to focus on file context
+- Renamed `<pb-context>` tag to just `<context>` for simplicity
+- Added proper language detection for code blocks
 
-- Initial release
-
-## [0.0.1] - 2024-03-14
+## [0.0.3]
 
 ### Added
-- Side-by-side editor for `.pbmd` files
-- File picker UI for adding context files
-- Auto-preview when opening `.pbmd` files (configurable)
-- "Copy as Prompt" functionality that:
-  - Includes referenced file contents
-  - Preserves notes and markdown formatting
-- Support for `<pb-context>` and `<pb-note>` tags
+- Added the ability to select multiple files
+- Follows `.gitignore` by default
+- Sorts files by modification time (most recent first)
+
+### Changed
+- Added the ability to disable auto-open preview
+
+## [0.0.2]
+
+### Added
+- Added the app icon
+
+## [0.0.1]
+
+### Added
+- Initial release of Prompt Buddy
