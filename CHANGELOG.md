@@ -2,6 +2,14 @@
 
 All notable changes to the "prompt-buddy" extension will be documented in this file.
 
+## [0.1.5]
+
+### Changed
+- Cursor doesn't show the intellisense lightbulb, so now when you're in a .pbmd file there's a "Prompt Buddy" guy in the bottom status bar to see the available commands.
+- (You can still use the command palette to add files / copy the prompt, this is just for discovery).
+- Be smarter about adding files to the context vs creating a new context block.
+- Change the version number arbitrarily.
+
 ## [0.0.4]
 
 ### Changed
