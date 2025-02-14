@@ -1,4 +1,23 @@
 import * as vscode from 'vscode';
+import { exec } from 'child_process';
+
+// Define segment types
+type TextSegment = {
+	type: 'text';
+	content: string;
+};
+
+type ContextSegment = {
+	type: 'context';
+	content: string;
+};
+
+type DiffSegment = {
+	type: 'diff';
+	branch: string | undefined;
+};
+
+type Segment = TextSegment | ContextSegment | DiffSegment;
 
 /**
  * Handles file processing for Prompt Buddy.
@@ -51,10 +70,11 @@ export class PromptBuddyEditor {
 	 */
 	public async processForCopy(text: string): Promise<string> {
 		// First parse the document into segments
-		const segments = [];
+		const segments: Segment[] = [];
 		let currentIndex = 0;
 		
-		const tagRegex = /<context>([\s\S]*?)<\/context>/g;
+		// Handle both context tags and diff tags
+		const tagRegex = /(<context>[\s\S]*?<\/context>)|(<diff(?:\s+branch="([^"]*)")?\s*\/>)/g;
 		let match;
 
 		while ((match = tagRegex.exec(text)) !== null) {
@@ -66,10 +86,17 @@ export class PromptBuddyEditor {
 				});
 			}
 
-			segments.push({
-				type: 'context',
-				content: match[1].trim()
-			});
+			if (match[1]) { // Context tag
+				segments.push({
+					type: 'context',
+					content: match[1].slice('<context>'.length, -'</context>'.length)
+				});
+			} else if (match[2]) { // Diff tag
+				segments.push({
+					type: 'diff',
+					branch: match[3] // Will be undefined for <diff /> without branch attribute
+				});
+			}
 
 			currentIndex = match.index + match[0].length;
 		}
@@ -112,6 +139,38 @@ export class PromptBuddyEditor {
 					}
 				}));
 				return contents.join('\n\n');
+			} else if (segment.type === 'diff') {
+				try {
+					const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+					if (!workspaceFolder) {
+						throw new Error('No workspace folder found');
+					}
+
+					// Run git diff command
+					const command = segment.branch ? 
+						`cd "${workspaceFolder.uri.fsPath}" && git diff ${segment.branch}` : 
+						`cd "${workspaceFolder.uri.fsPath}" && git diff`;
+					
+					const diffOutput = await new Promise<string>((resolve, reject) => {
+						exec(command, (error: any, stdout: string, stderr: string) => {
+							if (error && error.code !== 1) { // git diff returns 1 if there are changes
+								reject(error);
+								return;
+							}
+							resolve(stdout);
+						});
+					});
+
+					if (!diffOutput.trim()) {
+						return '[No changes]';
+					}
+
+					return `\`\`\`diff\n${diffOutput.trim()}\n\`\`\``;
+				} catch (err) {
+					console.error('Failed to get diff:', err);
+					vscode.window.showErrorMessage('Failed to get git diff');
+					return '[Failed to get diff]';
+				}
 			}
 			return '';
 		}));
