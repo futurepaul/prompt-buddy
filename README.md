@@ -6,7 +6,10 @@ https://github.com/user-attachments/assets/2fc6ea91-2bc1-4b3b-b61f-89c5b1e41ced
 
 ## Usage
 
-Create a `.pbmd` file and use the `<context>` tag to list files you want to include in your prompt (one per line).
+Create a `.pbmd` file and use special tags to enhance your prompts:
+
+### `<context>` Tag
+Use the `<context>` tag to list files you want to include in your prompt (one per line).
 
 Example:
 ```
@@ -18,6 +21,18 @@ config/settings.json
 </context>
 
 More prompt text here...
+```
+
+### `<diff />` Tag
+Use the self-closing `<diff />` tag to include git diff output in your prompt. You can optionally specify a branch to compare against.
+
+Examples:
+```
+Show me what changed:
+<diff />
+
+Show me what changed compared to master:
+<diff branch="master" />
 ```
 
 ## Commands

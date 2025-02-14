@@ -2,6 +2,12 @@
 
 All notable changes to the "prompt-buddy" extension will be documented in this file.
 
+## [0.2.0]
+
+### Added
+- New `<diff />` tag to include git diff output in prompts
+- Optional `branch` attribute for `<diff />` tag to compare against specific branches
+
 ## [0.1.5]
 
 ### Changed
